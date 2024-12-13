@@ -182,8 +182,8 @@ void MeshBlock::search()
             // find each cell that has
             // overlap with the bounding box
             //
-            xmin[0] = xmin[1] = xmin[2] = BIGVALUE;
-            xmax[0] = xmax[1] = xmax[2] = -BIGVALUE;
+            xmin[0] = xmin[1] = xmin[2] = std::numeric_limits<double>::max();
+            xmax[0] = xmax[1] = xmax[2] = std::numeric_limits<double>::lowest();
             for (m = 0; m < nvert; m++) {
                 i3 = 3 * (vconn[n][nvert * i + m] - BASE);
                 for (j = 0; j < 3; j++) {
@@ -241,8 +241,8 @@ void MeshBlock::search()
             }
         }
         nvert = nv[n];
-        xmin[0] = xmin[1] = xmin[2] = BIGVALUE;
-        xmax[0] = xmax[1] = xmax[2] = -BIGVALUE;
+        xmin[0] = xmin[1] = xmin[2] = std::numeric_limits<double>::max();
+        xmax[0] = xmax[1] = xmax[2] = std::numeric_limits<double>::lowest();
         for (m = 0; m < nvert; m++) {
             i3 = 3 * (vconn[n][nvert * i + m] - BASE);
             for (j = 0; j < 3; j++) {
@@ -409,7 +409,7 @@ void MeshBlock::search_uniform_hex()
                 for (int k = 0; k < 3; k++) {
                     xd[j] += (xsearch[3 * i + k] - xlow[k]) * obh->vec[j][k];
                 }
-                idx[j] = xd[j] / dx[j];
+                idx[j] = static_cast<int>(xd[j] / dx[j]);
             }
             if (xd[0] > -TOL && xd[0] < idims[0] * dx[0] + TOL &&
                 xd[1] > -TOL && xd[1] < idims[1] * dx[1] + TOL &&
@@ -421,13 +421,15 @@ void MeshBlock::search_uniform_hex()
                 }
                 dID[0] = uindx
                     [idx[2] * idims[1] * idims[0] + idx[1] * idims[0] + idx[0]];
-                dID[1] = (dID[0] > -1)
-                             ? static_cast<int>(cellRes[dID[0]] == BIGVALUE)
-                             : 1;
+                dID[1] = (dID[0] > -1) ? static_cast<int>(
+                                             cellRes[dID[0]] ==
+                                             std::numeric_limits<double>::max())
+                                       : 1;
                 for (int jj = 0; jj < 8 && (dId[0] == -1 || (dID[1] != 0));
                      jj++) {
                     for (int k = 0; k < 3; k++) {
-                        idx[k] = (xd[k] + xvec[jj][k]) / dx[k];
+                        idx[k] =
+                            static_cast<int>((xd[k] + xvec[jj][k]) / dx[k]);
                         if (idx[k] == idims[k]) {
                             idx[k]--;
                         }
@@ -436,7 +438,9 @@ void MeshBlock::search_uniform_hex()
                         [idx[2] * idims[1] * idims[0] + idx[1] * idims[0] +
                          idx[0]];
                     dID[1] = (dtest > -1)
-                                 ? static_cast<int>(cellRes[dtest] == BIGVALUE)
+                                 ? static_cast<int>(
+                                       cellRes[dtest] ==
+                                       std::numeric_limits<double>::max())
                                  : 1;
                     dID[0] =
                         (dID[0] == -1) ? dtest : (dID[1] == 0 ? dtest : dID[0]);

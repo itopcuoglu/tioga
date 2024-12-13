@@ -61,7 +61,7 @@ void tioga::getHoleMap()
     //
     // get the local bounding box
     //
-    meshtag = -BIGINT; // std::numeric_limits<int>::lowest();
+    meshtag = std::numeric_limits<int>::lowest();
     for (int i = 0; i < nblocks; i++) {
         auto& mb = mblocks[i];
         mb->getWallBounds(&mtagtmp, &existWall[i], wbox[i].data());
@@ -99,16 +99,16 @@ void tioga::getHoleMap()
     bboxGlobal = (double*)malloc(sizeof(double) * 6 * maxtag);
     //
     for (i = 0; i < 3 * maxtag; i++) {
-        bboxLocal[i] = BIGVALUE;
+        bboxLocal[i] = std::numeric_limits<double>::max();
     }
     for (i = 0; i < 3 * maxtag; i++) {
-        bboxLocal[i + 3 * maxtag] = -BIGVALUE;
+        bboxLocal[i + 3 * maxtag] = std::numeric_limits<double>::lowest();
     }
     for (i = 0; i < 3 * maxtag; i++) {
-        bboxGlobal[i] = BIGVALUE;
+        bboxGlobal[i] = std::numeric_limits<double>::max();
     }
     for (i = 0; i < 3 * maxtag; i++) {
-        bboxGlobal[i + 3 * maxtag] = -BIGVALUE;
+        bboxGlobal[i + 3 * maxtag] = std::numeric_limits<double>::lowest();
     }
 
     //
@@ -226,7 +226,7 @@ void tioga::getAdaptiveHoleMap()
     /* =========================== */
     /* A: count max number of tags */
     /* =========================== */
-    maxtagLocal = -BIGINT;
+    maxtagLocal = std::numeric_limits<int>::lowest();
     for (mbi = 0; mbi < nblocks; mbi++) {
         auto& mb = mblocks[mbi];
         int const mbtag = mb->getMeshTag();
@@ -280,7 +280,7 @@ void tioga::getAdaptiveHoleMap()
     /* =============================== */
     { // using encapsulation for clean up
         /* local variables */
-        ADAPTIVE_HOLEMAP_OCTANT AHMO[nblocks];
+        std::vector<ADAPTIVE_HOLEMAP_OCTANT> AHMO(nblocks);
         int i, j, l, c, n;
 
         for (mbi = 0; mbi < nblocks; mbi++) {
@@ -307,14 +307,15 @@ void tioga::getAdaptiveHoleMap()
             mb->getWallBounds(&meshtag, &existWallFlag, bboxLocal);
 
             // set hole for this body
-            AHMOLocal.existWall = existHole[meshtag - BASE];
+            AHMOLocal.existWall =
+                static_cast<int8_t>(existHole[meshtag - BASE]);
 
             // initialize global bounding box data
             for (i = 0; i < 3; i++) {
-                bboxGlobal[i] = BIGVALUE;
+                bboxGlobal[i] = std::numeric_limits<double>::max();
             }
             for (i = 0; i < 3; i++) {
-                bboxGlobal[3 + i] = -BIGVALUE;
+                bboxGlobal[3 + i] = std::numeric_limits<double>::lowest();
             }
 
             // get the global bounding box info for this body (note the
@@ -423,7 +424,8 @@ void tioga::getAdaptiveHoleMap()
 
                 nrefine = 0;
                 for (i = 0; i < lvl->elem_count; i++) {
-                    refineFlag[i] = existWall[i] && existOuter[i];
+                    refineFlag[i] =
+                        static_cast<char>(existWall[i] && existOuter[i]);
                     if (refineFlag[i] != 0) {
                         nrefine++;
                     }
@@ -539,7 +541,7 @@ void tioga::getAdaptiveHoleMap()
         /* ======================================================== */
         for (int cb = 0; cb < ncomposite; cb++) {
             CompositeBody& Composite = compositeBody[cb];
-            int const nbodies = Composite.bodyids.size();
+            int const nbodies = static_cast<int>(Composite.bodyids.size());
 
             for (i = 0; i < nbodies; i++) {
                 int const bodyi = Composite.bodyids[i] - BASE;
@@ -643,7 +645,9 @@ void tioga::getAdaptiveHoleMap()
                         // communicate leaf octant coordinate data on level
                         MPI_Bcast(
                             level->octants.data(),
-                            level->elem_count * sizeof(octant_coordinates_t),
+                            static_cast<int>(
+                                level->elem_count *
+                                sizeof(octant_coordinates_t)),
                             MPI_BYTE, MBC.masterID, MBC.comm);
                     }
 
@@ -676,8 +680,9 @@ void tioga::getAdaptiveHoleMap()
                         // f. inform all mesh-block processes with this body tag
                         // of the octants flags (note the communicator)
                         MPI_Allreduce(
-                            MPI_IN_PLACE, existWall.data(), level->elem_count,
-                            MPI_UINT8_T, MPI_MAX, MBC.comm);
+                            MPI_IN_PLACE, existWall.data(),
+                            static_cast<int>(level->elem_count), MPI_UINT8_T,
+                            MPI_MAX, MBC.comm);
 
                         // g. update filltype to wall if touching wall
                         if (rankContainsBody != 0) {
@@ -817,8 +822,8 @@ void tioga::getAdaptiveHoleMap()
                     // communicate leaf octant data on level
                     MPI_Bcast(
                         elvl->octants.data(),
-                        elvl->elem_count * sizeof(octant_t), MPI_BYTE,
-                        MBC.masterID, MBC.comm);
+                        static_cast<int>(elvl->elem_count * sizeof(octant_t)),
+                        MPI_BYTE, MBC.masterID, MBC.comm);
 
                     // count number of octants
                     meta.elem_count += elvl->elem_count;

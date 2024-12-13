@@ -30,6 +30,7 @@
 #include "linCartInterp.h"
 #include "linklist.h"
 #include "tioga_utils.h"
+#include <limits>
 
 void CartBlock::registerData(int lid, TIOGA::AMRMeshInfo* minfo)
 {
@@ -99,7 +100,7 @@ void CartBlock::getInterpolatedData(
         listptr = interpList;
         icount = 3 * nintold;
         dcount = nrealold;
-        qq = (double*)malloc(sizeof(double) * (nvar_cell + nvar_node));
+        qq = (double*)calloc((nvar_cell + nvar_node), sizeof(double));
         while (listptr != nullptr) {
             (*intData)[icount++] = listptr->receptorInfo[0];
             (*intData)[icount++] = -1 - listptr->receptorInfo[2];
@@ -471,7 +472,8 @@ void CartBlock::processIblank(HOLEMAP* holemap, int nmesh, bool isNodal)
                         // simplify logic here: the first one on the list is the
                         // best donor anyway, accept it if its not a mandatory
                         // receptor on the donor side
-                        if (temp->donorRes < BIGVALUE) {
+                        if (temp->donorRes <
+                            std::numeric_limits<double>::max()) {
                             iblank[ibindex] = -1;
                             temp = temp->next;
                         }
@@ -636,7 +638,8 @@ void CartBlock::processIblank(
                         // simplify logic here: the first one on the list is the
                         // best donor anyway, accept it if its not a mandatory
                         // receptor on the donor side
-                        if (temp->donorRes < BIGVALUE) {
+                        if (temp->donorRes <
+                            std::numeric_limits<double>::max()) {
                             iblank[ibindex] = -1;
                             temp = temp->next;
                         }

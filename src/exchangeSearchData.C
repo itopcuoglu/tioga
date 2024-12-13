@@ -29,7 +29,6 @@ using namespace TIOGA;
 
 void tioga::exchangeSearchData(int at_points)
 {
-    int i;
     int nsend, nrecv;
     PACKET *sndPack, *rcvPack;
     int* sndMap;
@@ -46,21 +45,21 @@ void tioga::exchangeSearchData(int at_points)
     sndPack = (PACKET*)malloc(sizeof(PACKET) * nsend);
     rcvPack = (PACKET*)malloc(sizeof(PACKET) * nrecv);
     //
-    for (i = 0; i < nsend; i++) {
+    for (int i = 0; i < nsend; i++) {
         sndPack[i].nints = sndPack[i].nreals = 0;
         sndPack[i].intData = nullptr;
         sndPack[i].realData = nullptr;
     }
     //
-    for (i = 0; i < nrecv; i++) {
-        rcvPack[i].nints = rcvPack[i].nreals = 0;
-        rcvPack[i].intData = nullptr;
-        rcvPack[i].realData = nullptr;
+    for (int ii = 0; ii < nrecv; ii++) {
+        rcvPack[ii].nints = rcvPack[ii].nreals = 0;
+        rcvPack[ii].intData = nullptr;
+        rcvPack[ii].realData = nullptr;
     }
 
     // Process each intersection pair and determine the total data that needs to
     // be sent
-    int const nobb = obblist.size();
+    int const nobb = static_cast<int>(obblist.size());
     std::vector<int> nintsSend(nobb);
     std::vector<int> nrealsSend(nobb);
     int** int_data = (int**)malloc(sizeof(int*) * nobb);
