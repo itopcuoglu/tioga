@@ -227,14 +227,14 @@ void tioga_dataupdate_mb_(const int* nvar, char* itype)
 
     // tg->dataUpdate(*nvar,interptype);
 
-    if (tg->ihighGlobal == 0) {
-        if (tg->iamrGlobal == 0) {
+    if (tg->get_ihighGlobal() == 0) {
+        if (tg->get_iamrGlobal() == 0) {
             tg->dataUpdate(*nvar, interptype);
         } else {
             tg->dataUpdate_AMR();
         }
     } else {
-        if (tg->iamrGlobal == 0) {
+        if (tg->get_iamrGlobal() == 0) {
             tg->dataUpdate(*nvar, interptype, 1);
         } else {
             printf(
