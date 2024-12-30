@@ -53,16 +53,16 @@ void tioga::setCommunicator(MPI_Comm communicator, int id_proc, int nprocs)
     // instantiate the parallel communication class
     //
     pc = new parallelComm[1];
-    pc->myid = myid;
-    pc->scomm = scomm;
-    pc->numprocs = numprocs;
+    pc->set_rank(myid);
+    pc->set_comm(scomm);
+    pc->set_comm_size(numprocs);
 
     // instantiate the parallel communication class
     //
     pc_cart = new parallelComm[1];
-    pc_cart->myid = myid;
-    pc_cart->scomm = scomm;
-    pc_cart->numprocs = numprocs;
+    pc_cart->set_rank(myid);
+    pc_cart->set_comm(scomm);
+    pc_cart->set_comm_size(numprocs);
     //
 }
 

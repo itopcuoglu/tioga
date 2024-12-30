@@ -439,3 +439,15 @@ void parallelComm::initPackets(PACKET* sndPack, PACKET* rcvPack) const
     }
     //
 }
+
+void parallelComm::set_comm_size(int nprocs) { numprocs = nprocs; }
+
+int parallelComm::get_comm_size() { return numprocs; }
+
+void parallelComm::set_rank(int procid) { myid = procid; }
+
+int parallelComm::get_rank() { return myid; }
+
+void parallelComm::set_comm(MPI_Comm comm) { scomm = comm; }
+
+MPI_Comm parallelComm::get_comm() { return scomm; }

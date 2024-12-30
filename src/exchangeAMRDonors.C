@@ -52,12 +52,13 @@ void tioga::exchangeAMRDonors()
     //  since the receiver side is unknown
     //
     pc_cart->getMap(&nsend_sav, &nrecv_sav, &sndMap, &rcvMap);
-    sndMapAll = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    rcvMapAll = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    nsend = nrecv = pc_cart->numprocs;
-    imap = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    icount = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    for (i = 0; i < pc_cart->numprocs; i++) {
+    int cart_comm_size = pc_cart->get_comm_size();
+    sndMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
+    rcvMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
+    nsend = nrecv = cart_comm_size;
+    imap = (int*)malloc(sizeof(int) * cart_comm_size);
+    icount = (int*)malloc(sizeof(int) * cart_comm_size);
+    for (i = 0; i < cart_comm_size; i++) {
         sndMapAll[i] = rcvMapAll[i] = imap[i] = i;
         icount[i] = 0;
     }
@@ -319,10 +320,12 @@ void tioga::checkComm()
     int *sndMap, *rcvMap;
     PACKET *sndPack, *rcvPack;
 
-    nsend = nrecv = pc_cart->numprocs;
+    int cart_comm_size = pc_cart->get_comm_size();
+    nsend = cart_comm_size;
+    nrecv = cart_comm_size;
     sndMap = (int*)malloc(sizeof(int) * nsend);
     rcvMap = (int*)malloc(sizeof(int) * nrecv);
-    for (i = 0; i < pc_cart->numprocs; i++) {
+    for (i = 0; i < cart_comm_size; i++) {
         sndMap[i] = rcvMap[i] = i;
     }
     pc_cart->setMap(nsend, nrecv, sndMap, rcvMap);

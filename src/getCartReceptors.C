@@ -39,8 +39,9 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     //
     // limit case we communicate to everybody
     //
-    int* pmap = (int*)malloc(sizeof(int) * pc->numprocs);
-    for (int i = 0; i < pc->numprocs; i++) {
+    int comm_size = pc->get_comm_size();
+    int* pmap = (int*)malloc(sizeof(int) * comm_size);
+    for (int i = 0; i < comm_size; i++) {
         pmap[i] = 0;
     }
     //
@@ -111,7 +112,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     // create the communication map
     //
     int nsend = 0;
-    for (int i = 0; i < pc->numprocs; i++) {
+    for (int i = 0; i < comm_size; i++) {
         if (pmap[i] == 1) {
             nsend++;
         }
@@ -120,7 +121,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     int* sndMap = (int*)malloc(sizeof(int) * nsend);
     int* rcvMap = (int*)malloc(sizeof(int) * nrecv);
     int m = 0;
-    for (int i = 0; i < pc->numprocs; i++) {
+    for (int i = 0; i < comm_size; i++) {
         if (pmap[i] == 1) {
             sndMap[m] = rcvMap[m] = i;
             m++;
