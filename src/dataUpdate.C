@@ -25,8 +25,7 @@
 #include "codetypes.h"
 #include "MeshBlock.h"
 
-#define ROW 0
-#define COLUMN 1
+enum : uint8_t { ROW = 0, COLUMN = 1 };
 
 void MeshBlock::getInterpolatedSolution(
     int* nints,
@@ -74,7 +73,7 @@ void MeshBlock::getInterpolatedSolution(
                         printf("warning: weights are not convex 1\n");
                     }
                     for (k = 0; k < nvar; k++) {
-                        qq[k] += q[inode * nvar + k] * weight;
+                        qq[k] += q[(inode * nvar) + k] * weight;
                     }
                 }
                 (*intData)[icount++] = interpList[i].receptorInfo[0];
@@ -95,7 +94,7 @@ void MeshBlock::getInterpolatedSolution(
                     inode = interpList[i].inode[m];
                     weight = interpList[i].weights[m];
                     for (k = 0; k < nvar; k++) {
-                        qq[k] += q[k * nnodes + inode] * weight;
+                        qq[k] += q[(k * nnodes) + inode] * weight;
                     }
                 }
                 (*intData)[icount++] = interpList[i].receptorInfo[0];
@@ -122,12 +121,12 @@ void MeshBlock::updateSolnData(int inode, const double* qvar, double* q) const
         }
         assert(inode < nnodes);
         for (k = 0; k < nvar; k++) {
-            q[inode * nvar + k] = qvar[k];
+            q[(inode * nvar) + k] = qvar[k];
         }
     }
     if (interptype == COLUMN) {
         for (k = 0; k < nvar; k++) {
-            q[nnodes * k + inode] = qvar[k];
+            q[(nnodes * k) + inode] = qvar[k];
         }
     }
 }

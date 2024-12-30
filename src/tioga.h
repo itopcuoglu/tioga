@@ -35,7 +35,6 @@
  *  can support
  */
 #define TIOGA_HAS_UINT64T 1
-
 /** Define a macro entry flagging whether TIOGA has hetereogenous execution
  *  space support, and uses the new API for registering mesh/solution data
  */

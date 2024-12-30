@@ -85,7 +85,7 @@ void tioga::exchangeBoxes()
         displs[i] = displs[i - 1] + nbPerProc[i - 1] * 16;
     }
 
-    std::vector<double> myOBBdata(static_cast<int>(nblocks * 16));
+    std::vector<double> myOBBdata(nblocks * 16);
     std::vector<double> allOBBdata(static_cast<int>(ntotalblks * 16));
 
     int m = 0;
@@ -240,9 +240,9 @@ void tioga::exchangeBoxes()
         int const roff = idxOffset[k] * 6;
 
         int const key_recv =
-            mxtgsqr * ip + maxtag * (mtags[ib] - 1) + obbID[ob] - 1;
+            (mxtgsqr * ip) + (maxtag * (mtags[ib] - 1)) + obbID[ob] - 1;
         int const key_send =
-            mxtgsqr * myid + maxtag * (obbID[ob] - 1) + (mtags[ib] - 1);
+            (mxtgsqr * myid) + (maxtag * (obbID[ob] - 1)) + (mtags[ib] - 1);
         intBoxMap[key_recv] = static_cast<int>(i);
         ibProcMap[k][ioff] = static_cast<int>(i);
         obblist[i].comm_idx = k;
@@ -253,8 +253,8 @@ void tioga::exchangeBoxes()
 
         sndPack[k].intData[static_cast<int>(3 * ioff)] =
             key_send; // mb->getMeshTag();
-        sndPack[k].intData[3 * ioff + 1] = ib;
-        sndPack[k].intData[3 * ioff + 2] = mb->getMeshTag();
+        sndPack[k].intData[(3 * ioff) + 1] = ib;
+        sndPack[k].intData[(3 * ioff) + 2] = mb->getMeshTag();
         // mb->getReducedOBB2(&obbRecv[ob], &(sndPack[k].realData[roff]));
         mb->getReducedOBB(&obbRecv[ob], &(sndPack[k].realData[roff]));
 

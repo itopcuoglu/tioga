@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstddef>
+#include <limits>
 #include "TiogaMeshInfo.h"
 #include "codetypes.h"
 #include "CartBlock.h"
@@ -30,7 +32,6 @@
 #include "linCartInterp.h"
 #include "linklist.h"
 #include "tioga_utils.h"
-#include <limits>
 
 void CartBlock::registerData(int lid, TIOGA::AMRMeshInfo* minfo)
 {
@@ -111,14 +112,13 @@ void CartBlock::getInterpolatedData(
             }
 
             for (i = 0; i < listptr->nweights; i++) {
-                int const cell_index =
-                    static_cast<int>(cart_utils::get_cell_index(
-                        dims[0], dims[1], nf,
-                        listptr->inode[static_cast<int>(3 * i)],
-                        listptr->inode[3 * i + 1], listptr->inode[3 * i + 2]));
+                int const cell_index = (cart_utils::get_cell_index(
+                    dims[0], dims[1], nf,
+                    listptr->inode[static_cast<ptrdiff_t>(3 * i)],
+                    listptr->inode[(3 * i) + 1], listptr->inode[(3 * i) + 2]));
                 for (n = 0; n < nvar_cell; n++) {
                     weight = listptr->weights[i];
-                    qq[n] += qcell[cell_index + ncell_nf * n] * weight;
+                    qq[n] += qcell[cell_index + (ncell_nf * n)] * weight;
                 }
 
                 int const ind_offset = 3 * (listptr->nweights + i);
@@ -129,7 +129,7 @@ void CartBlock::getInterpolatedData(
                 for (n = 0; n < nvar_node; n++) {
                     weight = listptr->weights[listptr->nweights + i];
                     qq[nvar_cell + n] +=
-                        qnode[node_index + nnode_nf * n] * weight;
+                        qnode[node_index + (nnode_nf * n)] * weight;
                 }
             }
 
@@ -150,14 +150,14 @@ void CartBlock::update(const double* qval, int index)
             return;
         }
         for (int i = 0; i < nvar_node; i++) {
-            qnode[index - ncell_nf + nnode_nf * i] = qval[nvar_cell + i];
+            qnode[index - ncell_nf + (nnode_nf * i)] = qval[nvar_cell + i];
         }
     } else {
         if (nvar_cell == 0) {
             return;
         }
         for (int i = 0; i < nvar_cell; i++) {
-            qcell[index + ncell_nf * i] = qval[i];
+            qcell[index + (ncell_nf * i)] = qval[i];
         }
     }
 }
@@ -166,15 +166,15 @@ void CartBlock::preprocess(CartGrid* cg)
 {
     int nfrac;
     for (int n = 0; n < 3; n++) {
-        xlo[n] = cg->xlo[3 * global_id + n];
+        xlo[n] = cg->xlo[(3 * global_id) + n];
     }
     for (int n = 0; n < 3; n++) {
-        dx[n] = cg->dx[3 * global_id + n];
+        dx[n] = cg->dx[(3 * global_id) + n];
     }
-    dims[0] = cg->ihi[static_cast<int>(3 * global_id)] -
-              cg->ilo[static_cast<int>(3 * global_id)] + 1;
-    dims[1] = cg->ihi[3 * global_id + 1] - cg->ilo[3 * global_id + 1] + 1;
-    dims[2] = cg->ihi[3 * global_id + 2] - cg->ilo[3 * global_id + 2] + 1;
+    dims[0] = cg->ihi[static_cast<ptrdiff_t>(3 * global_id)] -
+              cg->ilo[static_cast<ptrdiff_t>(3 * global_id)] + 1;
+    dims[1] = cg->ihi[(3 * global_id) + 1] - cg->ilo[(3 * global_id) + 1] + 1;
+    dims[2] = cg->ihi[(3 * global_id) + 2] - cg->ilo[(3 * global_id) + 2] + 1;
     nf = cg->nf;
     myid = cg->myid;
     donor_frac = cg->donor_frac;
@@ -261,9 +261,11 @@ void CartBlock::insertInInterpList(
     if (donor_frac == nullptr) {
         listptr->nweights = 8;
         listptr->weights = (double*)malloc(
-            sizeof(double) * (static_cast<int>(listptr->nweights * 2)));
+            sizeof(double) *
+            (static_cast<unsigned long>(listptr->nweights * 2)));
         listptr->inode = (int*)malloc(
-            sizeof(int) * (static_cast<int>(listptr->nweights * 2 * 3)));
+            sizeof(int) *
+            (static_cast<unsigned long>(listptr->nweights * 2 * 3)));
 
         cart_interp::linear_interpolation(
             nf, ix, dims, rst, &(listptr->nweights), listptr->inode,
@@ -758,21 +760,21 @@ void CartBlock::writeCellFile(int bid)
     for (k = 0; k < dims[2] + 1; k++) {
         for (j = 0; j < dims[1] + 1; j++) {
             for (i = 0; i < dims[0] + 1; i++) {
-                fprintf(fp, "%lf\n", xlo[0] + dx[0] * i);
+                fprintf(fp, "%lf\n", xlo[0] + (dx[0] * i));
             }
         }
     }
     for (k = 0; k < dims[2] + 1; k++) {
         for (j = 0; j < dims[1] + 1; j++) {
             for (i = 0; i < dims[0] + 1; i++) {
-                fprintf(fp, "%lf\n", xlo[1] + dx[1] * j);
+                fprintf(fp, "%lf\n", xlo[1] + (dx[1] * j));
             }
         }
     }
     for (k = 0; k < dims[2] + 1; k++) {
         for (j = 0; j < dims[1] + 1; j++) {
             for (i = 0; i < dims[0] + 1; i++) {
-                fprintf(fp, "%lf\n", xlo[2] + dx[2] * k);
+                fprintf(fp, "%lf\n", xlo[2] + (dx[2] * k));
             }
         }
     }

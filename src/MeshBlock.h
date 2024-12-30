@@ -41,9 +41,7 @@ class CartGrid;
  * 02/20/2014
  */
 
-#define FRINGE (-1)
-#define HOLE 0
-#define FIELD 1
+enum : int8_t { FRINGE = -1, HOLE = 0, FIELD = 1 };
 
 class MeshBlock
 {
@@ -340,7 +338,7 @@ public:
 
     void getWallBounds(int* mtag, int* existWall, double wbox[6]);
 
-    void markWallBoundary(int* sam, int nx[3], const double extents[6]);
+    void markWallBoundary(int* sam, const int nx[3], const double extents[6]);
 
     void markBoundaryAdaptiveMap(
         char nodetype2tag,
@@ -495,8 +493,8 @@ public:
     void outputOrphan(FILE* fp, int i)
     {
         fprintf(
-            fp, "%f %f %f\n", rxyz[static_cast<int>(3 * i)], rxyz[3 * i + 1],
-            rxyz[3 * i + 2]);
+            fp, "%f %f %f\n", rxyz[static_cast<ptrdiff_t>(3 * i)],
+            rxyz[(3 * i) + 1], rxyz[(3 * i) + 2]);
     }
     void clearOrphans(HOLEMAP* holemap, int nmesh, const int* itmp);
     void clearOrphans(ADAPTIVE_HOLEMAP* holemap, int nmesh, int* itmp);
@@ -517,8 +515,8 @@ public:
     void setCartIblanks();
 
     // Getters
-    inline int getMeshTag() const { return meshtag + (1 - BASE); }
-    inline int getWallFlag() const { return static_cast<int>(nwbc > 0); }
+    int getMeshTag() const { return meshtag + (1 - BASE); }
+    int getWallFlag() const { return static_cast<int>(nwbc > 0); }
 
     /**
      * Get donor packet for multi-block/partition setups

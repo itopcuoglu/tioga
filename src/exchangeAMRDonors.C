@@ -95,7 +95,7 @@ void tioga::exchangeAMRDonors()
                     assert(
                         (mb->isearch[static_cast<int>(3 * i)] < nsend &&
                          mb->isearch[static_cast<int>(3 * i)] >= 0));
-                    obreceptors[imap[mb->isearch[static_cast<int>(3 * i)]]]++;
+                    obreceptors[imap[mb->isearch[3 * i]]]++;
                 }
             }
         }
@@ -134,11 +134,11 @@ void tioga::exchangeAMRDonors()
                         mb->receptorIdCart[i];
                     sndPack[procid].intData[intcount[procid]++] = ib;
                     sndPack[procid].realData[realcount[procid]++] =
-                        mb->rxyzCart[static_cast<int>(3 * i)];
+                        mb->rxyzCart[3 * i];
                     sndPack[procid].realData[realcount[procid]++] =
-                        mb->rxyzCart[3 * i + 1];
+                        mb->rxyzCart[(3 * i) + 1];
                     sndPack[procid].realData[realcount[procid]++] =
-                        mb->rxyzCart[3 * i + 2];
+                        mb->rxyzCart[(3 * i) + 2];
                 }
             }
         }
@@ -146,11 +146,11 @@ void tioga::exchangeAMRDonors()
             auto& mb = mblocks[ib];
             for (i = 0; i < mb->nsearch; i++) {
                 if (mb->donorId[i] != -1) {
-                    procid = imap[mb->isearch[static_cast<int>(3 * i)]];
+                    procid = imap[mb->isearch[3 * i]];
                     sndPack[procid].intData[intcount[procid]++] =
-                        mb->isearch[3 * i + 1];
+                        mb->isearch[(3 * i) + 1];
                     sndPack[procid].intData[intcount[procid]++] =
-                        mb->isearch[3 * i + 2];
+                        mb->isearch[(3 * i) + 2];
                     sndPack[procid].intData[intcount[procid]++] = mb->meshtag;
                     sndPack[procid].intData[intcount[procid]++] = i;
                     sndPack[procid].intData[intcount[procid]++] = ib;
@@ -257,10 +257,10 @@ void tioga::exchangeAMRDonors()
             cancelledData = (int*)malloc(sizeof(int) * 4 * ncancel);
             cb[i].getCancellationData(cancelledData, &ncancel);
             for (j = 0; j < ncancel; j++) {
-                procid = cancelledData[static_cast<int>(4 * j)];
-                ctype = cancelledData[4 * j + 1];
-                remoteid = cancelledData[4 * j + 2];
-                remoteblockid = cancelledData[4 * j + 3];
+                procid = cancelledData[4 * j];
+                ctype = cancelledData[(4 * j) + 1];
+                remoteid = cancelledData[(4 * j) + 2];
+                remoteblockid = cancelledData[(4 * j) + 3];
                 sndPack[procid].intData[intcount[procid]++] = ctype;
                 sndPack[procid].intData[intcount[procid]++] = remoteid;
                 sndPack[procid].intData[intcount[procid]++] = remoteblockid;

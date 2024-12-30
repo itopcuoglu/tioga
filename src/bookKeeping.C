@@ -42,7 +42,7 @@ void MeshBlock::getDonorPacket(PACKET* sndPack, int nsend) const
     //
     for (i = 0; i < nsearch; i++) {
         if (donorId[i] > -1) {
-            k = isearch[static_cast<int>(2 * i)];
+            k = isearch[2 * i];
             sndPack[k].nints += 3;
             sndPack[k].nreals++;
         }
@@ -59,9 +59,9 @@ void MeshBlock::getDonorPacket(PACKET* sndPack, int nsend) const
     //
     for (i = 0; i < nsearch; i++) {
         if (donorId[i] > -1) {
-            k = isearch[static_cast<int>(2 * i)];
-            sndPack[k].intData[icount[k]++] = meshtag;            // mesh tag
-            sndPack[k].intData[icount[k]++] = isearch[2 * i + 1]; // point id
+            k = isearch[2 * i];
+            sndPack[k].intData[icount[k]++] = meshtag;              // mesh tag
+            sndPack[k].intData[icount[k]++] = isearch[(2 * i) + 1]; // point id
             sndPack[k].intData[icount[k]++] = i; // point id on the donor side
             sndPack[k].realData[dcount[k]++] =
                 cellRes[donorId[i]]; // donor resolution
@@ -76,7 +76,7 @@ void MeshBlock::getMBDonorPktSizes(
 {
     for (int i = 0; i < nsearch; i++) {
         if (donorId[i] > -1) {
-            int const ii = isearch[static_cast<int>(3 * i)];
+            int const ii = isearch[3 * i];
             nints[ii] += 4;
             nreals[ii] += 2;
         }
@@ -93,14 +93,14 @@ void MeshBlock::getMBDonorPackets(
             continue;
         }
 
-        int const k = isearch[static_cast<int>(3 * i)];
+        int const k = isearch[3 * i];
         int& ix = ixOffset[k];
         int& rx = rxOffset[k];
 
-        sndPack[k].intData[ix++] = meshtag;            // Unique mesh tag
-        sndPack[k].intData[ix++] = isearch[3 * i + 1]; // point ID
-        sndPack[k].intData[ix++] = i;                  // point ID on donor side
-        sndPack[k].intData[ix++] = isearch[3 * i + 2]; // receptor block ID
+        sndPack[k].intData[ix++] = meshtag;              // Unique mesh tag
+        sndPack[k].intData[ix++] = isearch[(3 * i) + 1]; // point ID
+        sndPack[k].intData[ix++] = i; // point ID on donor side
+        sndPack[k].intData[ix++] = isearch[(3 * i) + 2]; // receptor block ID
         sndPack[k].realData[rx++] = cellRes[donorId[i]];
         sndPack[k].realData[rx++] = res_search[xtag[i]];
     }
@@ -180,9 +180,7 @@ void MeshBlock::processDonors(
         if (verbose != 0) TRACEI(iblank[i]);
         if (verbose != 0) TRACED(nodeRes[i]);
         if (verbose != 0) {
-            printf(
-                "%f %f %f\n", x[static_cast<int>(3 * i)], x[3 * i + 1],
-                x[3 * i + 2]);
+            printf("%f %f %f\n", x[3 * i], x[(3 * i) + 1], x[(3 * i) + 2]);
         }
         if (donorList[i] == nullptr) {
             if (verbose != 0) {
@@ -191,8 +189,8 @@ void MeshBlock::processDonors(
             for (j = 0; j < nmesh; j++) {
                 if (j != (meshtag - BASE) && (holemap[j].existWall != 0)) {
                     if (checkHoleMap(
-                            &x[static_cast<int>(3 * i)], holemap[j].nx,
-                            holemap[j].sam, holemap[j].extents) != 0) {
+                            &x[3 * i], holemap[j].nx, holemap[j].sam,
+                            holemap[j].extents) != 0) {
                         iblank[i] = 0;
                         break;
                     }
@@ -220,8 +218,8 @@ void MeshBlock::processDonors(
                 if (j != (meshtag - BASE) && (holemap[j].existWall != 0)) {
                     if (iflag[j] == 0) {
                         if (checkHoleMap(
-                                &x[static_cast<int>(3 * i)], holemap[j].nx,
-                                holemap[j].sam, holemap[j].extents) != 0) {
+                                &x[3 * i], holemap[j].nx, holemap[j].sam,
+                                holemap[j].extents) != 0) {
                             iblank[i] = 0;
                             break;
                         }
@@ -243,8 +241,8 @@ void MeshBlock::processDonors(
                     myid, wbcnode[i] - BASE, donorList[wbcnode[i] - BASE]);
                 ii = wbcnode[i] - BASE;
                 printf(
-                    "xloc=%e %e %e\n", x[static_cast<int>(3 * ii)],
-                    x[3 * ii + 1], x[3 * ii + 2]);
+                    "xloc=%e %e %e\n", x[3 * ii], x[(3 * ii) + 1],
+                    x[(3 * ii) + 2]);
                 printf(
                     "Computations will continue, but may suffer from accuracy "
                     "problems\n");
@@ -274,11 +272,11 @@ void MeshBlock::processDonors(
             nvert = nv[n];
             for (i = 0; i < nc[n]; i++) {
                 for (m = 0; m < nvert; m++) {
-                    if (mtag[(vconn[n][nvert * i + m] - BASE)] == 1) {
+                    if (mtag[(vconn[n][(nvert * i) + m] - BASE)] == 1) {
                         for (mm = 0; mm < nvert; mm++) {
                             if (m != mm &&
-                                mtag[vconn[n][nvert * i + mm] - BASE] != 1) {
-                                mtag1[vconn[n][nvert * i + mm] - BASE] = 1;
+                                mtag[vconn[n][(nvert * i) + mm] - BASE] != 1) {
+                                mtag1[vconn[n][(nvert * i) + mm] - BASE] = 1;
                             }
                         }
                     }
@@ -408,8 +406,8 @@ void MeshBlock::processDonors(
 
             for (j = 0; j < nmesh; j++) {
                 if (j != (meshtag - BASE) && (holemap[j].existWall != 0U)) {
-                    int const SB_val = checkAdaptiveHoleMap(
-                        &x[static_cast<int>(3 * i)], &holemap[j]);
+                    int const SB_val =
+                        checkAdaptiveHoleMap(&x[3 * i], &holemap[j]);
                     if (SB_val != OUTSIDE_SB) {
                         iblank[i] = 0;
                         break;
@@ -446,8 +444,8 @@ void MeshBlock::processDonors(
                     if (iflag[j] == 0) {
                         // body{j} does NOT have candidate so check if point is
                         // INSIDE SB
-                        int const SB_val = checkAdaptiveHoleMap(
-                            &x[static_cast<int>(3 * i)], &holemap[j]);
+                        int const SB_val =
+                            checkAdaptiveHoleMap(&x[3 * i], &holemap[j]);
                         if (SB_val != OUTSIDE_SB) {
                             iblank[i] = 0;
                             break;
@@ -472,8 +470,8 @@ void MeshBlock::processDonors(
                     myid, wbcnode[i] - BASE, donorList[wbcnode[i] - BASE]);
                 ii = wbcnode[i] - BASE;
                 fprintf(
-                    stderr, "xloc=%e %e %e\n", x[static_cast<int>(3 * ii)],
-                    x[3 * ii + 1], x[3 * ii + 2]);
+                    stderr, "xloc=%e %e %e\n", x[3 * ii], x[(3 * ii) + 1],
+                    x[(3 * ii) + 2]);
                 fprintf(
                     stderr,
                     "Computations will continue, but may suffer from accuracy "
@@ -504,11 +502,11 @@ void MeshBlock::processDonors(
             nvert = nv[n];
             for (i = 0; i < nc[n]; i++) {
                 for (m = 0; m < nvert; m++) {
-                    if (mtag[(vconn[n][nvert * i + m] - BASE)] == 1) {
+                    if (mtag[(vconn[n][(nvert * i) + m] - BASE)] == 1) {
                         for (mm = 0; mm < nvert; mm++) {
                             if (m != mm &&
-                                mtag[vconn[n][nvert * i + mm] - BASE] != 1) {
-                                mtag1[vconn[n][nvert * i + mm] - BASE] = 1;
+                                mtag[vconn[n][(nvert * i) + mm] - BASE] != 1) {
+                                mtag1[vconn[n][(nvert * i) + mm] - BASE] = 1;
                             }
                         }
                     }
@@ -653,9 +651,9 @@ void MeshBlock::findInterpData(int* recid, int irecord, double receptorRes2)
     // if (myid==63 && irecord==3224) verbose=1;
     // if (myid==1 && irecord==158192 && meshtag==1) verbose=1;
     receptorRes = fabs(receptorRes2);
-    procid = isearch[static_cast<int>(3 * irecord)];
-    pointid = isearch[3 * irecord + 1];
-    blockid = isearch[3 * irecord + 2];
+    procid = isearch[3 * irecord];
+    pointid = isearch[(3 * irecord) + 1];
+    blockid = isearch[(3 * irecord) + 2];
     meshtagrecv = tagsearch[irecord];
     if (verbose != 0) {
         TRACEI(procid);
@@ -684,7 +682,7 @@ void MeshBlock::findInterpData(int* recid, int irecord, double receptorRes2)
     if (verbose != 0) TRACEI(i)
     if (verbose != 0) TRACED(nodeRes[241291]);
     for (m = 0; m < nvert; m++) {
-        inode[m] = vconn[n][nvert * i + m] - BASE;
+        inode[m] = vconn[n][(nvert * i) + m] - BASE;
         if (verbose != 0) TRACEI(inode[m]);
         if (verbose != 0) TRACEI(iblank[inode[m]])
         if (verbose != 0) TRACED(nodeRes[inode[m]])
@@ -717,7 +715,7 @@ void MeshBlock::findInterpData(int* recid, int irecord, double receptorRes2)
         //
         for (m = 0; m < nvert; m++) {
             verbose = 0;
-            inode[m] = vconn[n][nvert * i + m] - BASE;
+            inode[m] = vconn[n][(nvert * i) + m] - BASE;
             // if (myid==763 && inode[m]==9515) verbose=1;
             // if (myid==1 && meshtag==2 && inode[m]==240304) verbose=1;
             if (verbose != 0) TRACEI(inode[m]);
@@ -959,7 +957,7 @@ void MeshBlock::reduce_fringes()
                 verbose = 0;
                 ncount = 0;
                 for (m = 0; m < nvert; m++) {
-                    inode[m] = vconn[n][nvert * i + m] - BASE;
+                    inode[m] = vconn[n][(nvert * i) + m] - BASE;
                     ncount = ncount + static_cast<int>(
                                           iblank_reduced[inode[m]] == 1 ||
                                           iblank_reduced[inode[m]] < 0);
