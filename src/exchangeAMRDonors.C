@@ -87,8 +87,10 @@ void tioga::exchangeAMRDonors()
             for (i = 0; i < mb->ntotalPointsCart; i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
-                    assert((cg->proc_id[gid] < nsend && cg->proc_id[gid] >= 0));
-                    obdonors[imap[cg->proc_id[gid]]]++;
+                    assert(
+                        (cg->get_proc_id(gid) < nsend &&
+                         cg->get_proc_id(gid) >= 0));
+                    obdonors[imap[cg->get_proc_id(gid)]]++;
                 }
             }
             for (i = 0; i < mb->nsearch; i++) {
@@ -128,8 +130,8 @@ void tioga::exchangeAMRDonors()
             for (i = 0; i < mb->ntotalPointsCart; i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
-                    procid = imap[cg->proc_id[gid]];
-                    localid = cg->local_id[gid];
+                    procid = imap[cg->get_proc_id(gid)];
+                    localid = cg->get_local_id(gid);
                     sndPack[procid].intData[intcount[procid]++] = localid;
                     sndPack[procid].intData[intcount[procid]++] =
                         mb->receptorIdCart[i];

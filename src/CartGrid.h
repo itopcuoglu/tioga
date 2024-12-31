@@ -38,14 +38,15 @@ private:
     bool own_data_ptrs{true};
     bool own_amr_mesh_info{false};
 
-public:
-    TIOGA::AMRMeshInfo* m_info{nullptr};
-    TIOGA::AMRMeshInfo* m_info_device{nullptr};
-
     int* global_id{nullptr};
     int* level_num{nullptr};
     int* proc_id{nullptr};
     int* local_id{nullptr};
+
+public:
+    TIOGA::AMRMeshInfo* m_info{nullptr};
+    TIOGA::AMRMeshInfo* m_info_device{nullptr};
+
     int* ilo{nullptr};
     int* ihi{nullptr};
     int* dims{nullptr};
@@ -70,6 +71,8 @@ public:
     }
 
     void create_mesh_info();
+    int get_proc_id(int index) { return proc_id[index]; }
+    int get_local_id(int index) { return local_id[index]; }
 };
 
 #endif /* CARTGRID_H */

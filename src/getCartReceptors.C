@@ -218,7 +218,7 @@ void MeshBlock::fillReceptorDataPtr(
     }
 
     if (iflag > 0) {
-        pmap[cg->proc_id[c]] = 1;
+        pmap[cg->get_proc_id(c)] = 1;
         dataPtr->next = (INTEGERLIST2*)malloc(sizeof(INTEGERLIST2));
         dataPtr = dataPtr->next;
         dataPtr->intDataSize = 4;
@@ -226,8 +226,8 @@ void MeshBlock::fillReceptorDataPtr(
         dataPtr->realData =
             (double*)malloc(sizeof(double) * dataPtr->realDataSize);
         dataPtr->intData = (int*)malloc(sizeof(int) * dataPtr->intDataSize);
-        dataPtr->intData[0] = cg->proc_id[c];
-        dataPtr->intData[1] = cg->local_id[c];
+        dataPtr->intData[0] = cg->get_proc_id(c);
+        dataPtr->intData[1] = cg->get_local_id(c);
         dataPtr->intData[2] = itm;
         dataPtr->intData[3] = 0;
         nsearch += 1;
