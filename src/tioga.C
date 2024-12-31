@@ -1203,7 +1203,7 @@ void tioga::register_amr_grid(TIOGA::AMRMeshInfo* minfo)
     }
 
     cg = new CartGrid[1];
-    cg->myid = myid;
+    cg->set_myid(myid);
     ncart = minfo->ngrids_local;
 
     if (ncart < 1) {
@@ -1233,7 +1233,7 @@ void tioga::register_amr_global_data(
         delete[] cg;
     }
     cg = new CartGrid[1];
-    cg->myid = myid;
+    cg->set_myid(myid);
     cg->registerData(nf, idata, rdata, ngridsin);
 }
 
@@ -1523,7 +1523,7 @@ void tioga::preprocess_amr_data(int root)
     {
         int const nghost = idata.back();
         cg = new CartGrid[1];
-        cg->myid = myid;
+        cg->set_myid(myid);
 
         // For these MPI ranks there are no local patches
         assert(cb == nullptr);

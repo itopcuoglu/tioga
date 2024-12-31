@@ -42,6 +42,7 @@ private:
     int* level_num{nullptr};
     int* proc_id{nullptr};
     int* local_id{nullptr};
+    int myid{0};
 
 public:
     TIOGA::AMRMeshInfo* m_info{nullptr};
@@ -50,7 +51,6 @@ public:
     int* ilo{nullptr};
     int* ihi{nullptr};
     int* dims{nullptr};
-    int myid{0};
     int nf{0};
     double* xlo{nullptr};
     double* dx{nullptr};
@@ -73,6 +73,8 @@ public:
     void create_mesh_info();
     int get_proc_id(int index) { return proc_id[index]; }
     int get_local_id(int index) { return local_id[index]; }
+    void set_myid(int rank_id) { myid = rank_id; }
+    int get_myid() { return myid; }
 };
 
 #endif /* CARTGRID_H */
