@@ -38,6 +38,9 @@ private:
     bool own_data_ptrs{true};
     bool own_amr_mesh_info{false};
 
+    TIOGA::AMRMeshInfo* m_info{nullptr};
+    TIOGA::AMRMeshInfo* m_info_device{nullptr};
+
     int* global_id{nullptr};
     int* level_num{nullptr};
     int* proc_id{nullptr};
@@ -45,9 +48,6 @@ private:
     int myid{0};
 
 public:
-    TIOGA::AMRMeshInfo* m_info{nullptr};
-    TIOGA::AMRMeshInfo* m_info_device{nullptr};
-
     int* ilo{nullptr};
     int* ihi{nullptr};
     int* dims{nullptr};
@@ -71,6 +71,8 @@ public:
     }
 
     void create_mesh_info();
+
+    TIOGA::AMRMeshInfo* get_mesh_info() { return m_info; }
     int get_proc_id(int index) { return proc_id[index]; }
     int get_local_id(int index) { return local_id[index]; }
     void set_myid(int rank_id) { myid = rank_id; }

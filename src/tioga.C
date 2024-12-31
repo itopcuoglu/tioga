@@ -1220,7 +1220,7 @@ void tioga::register_amr_grid(TIOGA::AMRMeshInfo* minfo)
 
 void tioga::register_amr_solution()
 {
-    auto* minfo = cg->m_info;
+    auto* minfo = cg->get_mesh_info();
     for (int ic = 0; ic < ncart; ++ic) {
         cb[ic].registerSolution(ic, minfo);
     }
@@ -1469,7 +1469,7 @@ void tioga::preprocess_amr_data(int root)
 
     // Let all processes know the number of global AMR patches so that they can
     // create buffers for MPI broadcast.
-    int ngrids_global = (root == myid) ? cg->m_info->ngrids_global : 0;
+    int ngrids_global = (root == myid) ? cg->get_mesh_info()->ngrids_global : 0;
     MPI_Bcast(&ngrids_global, 1, MPI_INT, root, scomm);
 
     // Buffers that will be used to perform MPI communications. The data layout
@@ -1482,7 +1482,7 @@ void tioga::preprocess_amr_data(int root)
     // On root MPI process for the AMR solver, populate the buffer for broadcast
     // to all processes.
     if (root == myid) {
-        const auto* ainfo = cg->m_info;
+        const auto* ainfo = cg->get_mesh_info();
         for (int pp = 0; pp < ngrids_global; ++pp) {
             int const i3 = pp * 3;
             int const i6 = pp * 6;
