@@ -46,10 +46,10 @@ private:
     int* proc_id{nullptr};
     int* local_id{nullptr};
     int myid{0};
-
-public:
     int* ilo{nullptr};
     int* ihi{nullptr};
+
+public:
     int* dims{nullptr};
     int nf{0};
     double* xlo{nullptr};
@@ -77,6 +77,8 @@ public:
     int get_local_id(int index) { return local_id[index]; }
     void set_myid(int rank_id) { myid = rank_id; }
     int get_myid() { return myid; }
+    int get_ilo(int index) { return ilo[index]; }
+    int get_ihi(int index) { return ihi[index]; }
 };
 
 #endif /* CARTGRID_H */
