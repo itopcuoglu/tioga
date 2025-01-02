@@ -48,10 +48,10 @@ private:
     int myid{0};
     int* ilo{nullptr};
     int* ihi{nullptr};
-
-public:
     int* dims{nullptr};
     int nf{0};
+
+public:
     double* xlo{nullptr};
     double* dx{nullptr};
     int ngrids{0};
@@ -79,6 +79,8 @@ public:
     int get_myid() { return myid; }
     int get_ilo(int index) { return ilo[index]; }
     int get_ihi(int index) { return ihi[index]; }
+    int get_dims(int index) { return dims[index]; }
+    int get_nf() { return nf; }
 };
 
 #endif /* CARTGRID_H */
