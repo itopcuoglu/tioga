@@ -67,12 +67,12 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
                                (cg->get_dims(3 * c + 2) + 2 * cg->get_nf());
 
         int const vol = static_cast<int>(
-            cg->dx[3 * c] * cg->dx[3 * c + 1] * cg->dx[3 * c + 2]);
+            cg->get_dx(3 * c) * cg->get_dx(3 * c + 1) * cg->get_dx(3 * c + 2));
 
         for (int n = 0; n < 3; n++) {
             obcart->dxc[n] =
-                cg->dx[3 * c + n] * (cg->get_dims(3 * c + n)) * 0.5;
-            obcart->xc[n] = cg->xlo[3 * c + n] + obcart->dxc[n];
+                cg->get_dx(3 * c + n) * (cg->get_dims(3 * c + n)) * 0.5;
+            obcart->xc[n] = cg->get_xlo(3 * c + n) + obcart->dxc[n];
         }
 
         int intersectCount = 0;
@@ -190,17 +190,17 @@ void MeshBlock::fillReceptorDataPtr(
             cg->get_dims(3 * c), cg->get_dims(3 * c + 1),
             cg->get_dims(3 * c + 2), cg->get_nf(), j, k, l);
 
-        xtm[0] = cg->xlo[3 * c] + j * cg->dx[3 * c];
-        xtm[1] = cg->xlo[3 * c + 1] + k * cg->dx[3 * c + 1];
-        xtm[2] = cg->xlo[3 * c + 2] + l * cg->dx[3 * c + 2];
+        xtm[0] = cg->get_xlo(3 * c) + j * cg->get_dx(3 * c);
+        xtm[1] = cg->get_xlo(3 * c + 1) + k * cg->get_dx(3 * c + 1);
+        xtm[2] = cg->get_xlo(3 * c + 2) + l * cg->get_dx(3 * c + 2);
     } else {
         itm = cart_utils::get_cell_index(
             cg->get_dims(3 * c), cg->get_dims(3 * c + 1), cg->get_nf(), j, k,
             l);
 
-        xtm[0] = cg->xlo[3 * c] + (j + 0.5) * cg->dx[3 * c];
-        xtm[1] = cg->xlo[3 * c + 1] + (k + 0.5) * cg->dx[3 * c + 1];
-        xtm[2] = cg->xlo[3 * c + 2] + (l + 0.5) * cg->dx[3 * c + 2];
+        xtm[0] = cg->get_xlo(3 * c) + (j + 0.5) * cg->get_dx(3 * c);
+        xtm[1] = cg->get_xlo(3 * c + 1) + (k + 0.5) * cg->get_dx(3 * c + 1);
+        xtm[2] = cg->get_xlo(3 * c + 2) + (l + 0.5) * cg->get_dx(3 * c + 2);
     }
 
     double xd[3];

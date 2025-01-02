@@ -166,10 +166,10 @@ void CartBlock::preprocess(CartGrid* cg)
 {
     int nfrac;
     for (int n = 0; n < 3; n++) {
-        xlo[n] = cg->xlo[(3 * global_id) + n];
+        xlo[n] = cg->get_xlo((3 * global_id) + n);
     }
     for (int n = 0; n < 3; n++) {
-        dx[n] = cg->dx[(3 * global_id) + n];
+        dx[n] = cg->get_dx((3 * global_id) + n);
     }
     dims[0] = cg->get_ihi((3 * global_id)) - cg->get_ilo((3 * global_id)) + 1;
     dims[1] =
