@@ -61,7 +61,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     //
     nsearch = 0;
     //
-    for (int c = 0; c < cg->ngrids; c++) {
+    for (int c = 0; c < cg->get_ngrids(); c++) {
         int const cell_count = (cg->get_dims(3 * c) + 2 * cg->get_nf()) *
                                (cg->get_dims(3 * c + 1) + 2 * cg->get_nf()) *
                                (cg->get_dims(3 * c + 2) + 2 * cg->get_nf());

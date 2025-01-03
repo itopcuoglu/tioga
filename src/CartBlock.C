@@ -178,7 +178,7 @@ void CartBlock::preprocess(CartGrid* cg)
         cg->get_ihi((3 * global_id) + 2) - cg->get_ilo((3 * global_id) + 2) + 1;
     nf = cg->get_nf();
     myid = cg->get_myid();
-    donor_frac = cg->donor_frac;
+    donor_frac = cg->get_donor_frac();
     ncell = dims[0] * dims[1] * dims[2];
     ncell_nf = (dims[0] + 2 * nf) * (dims[1] + 2 * nf) * (dims[2] + 2 * nf);
     nnode = (dims[0] + 1) * (dims[1] + 1) * (dims[2] + 1);

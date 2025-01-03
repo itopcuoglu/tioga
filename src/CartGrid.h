@@ -52,11 +52,10 @@ private:
     int nf{0};
     double* xlo{nullptr};
     double* dx{nullptr};
-
-public:
     int ngrids{0};
     void (*donor_frac)(int*, double*, int*, double*) = nullptr;
 
+public:
     CartGrid() = default;
     ~CartGrid();
 
@@ -83,6 +82,11 @@ public:
     int get_nf() { return nf; }
     double get_xlo(int index) { return xlo[index]; }
     double get_dx(int index) { return dx[index]; }
+    int get_ngrids() { return ngrids; }
+    void (*get_donor_frac())(int*, double*, int*, double*)
+    {
+        return donor_frac;
+    }
 };
 
 #endif /* CARTGRID_H */
