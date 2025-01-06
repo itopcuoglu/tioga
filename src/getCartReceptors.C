@@ -39,7 +39,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     //
     // limit case we communicate to everybody
     //
-    int comm_size = pc->get_comm_size();
+    const int comm_size = pc->get_comm_size();
     int* pmap = (int*)malloc(sizeof(int) * comm_size);
     for (int i = 0; i < comm_size; i++) {
         pmap[i] = 0;
