@@ -52,12 +52,13 @@ void tioga::exchangeAMRDonors()
     //  since the receiver side is unknown
     //
     pc_cart->getMap(&nsend_sav, &nrecv_sav, &sndMap, &rcvMap);
-    sndMapAll = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    rcvMapAll = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    nsend = nrecv = pc_cart->numprocs;
-    imap = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    icount = (int*)malloc(sizeof(int) * pc_cart->numprocs);
-    for (i = 0; i < pc_cart->numprocs; i++) {
+    const int cart_comm_size = pc_cart->get_comm_size();
+    sndMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
+    rcvMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
+    nsend = nrecv = cart_comm_size;
+    imap = (int*)malloc(sizeof(int) * cart_comm_size);
+    icount = (int*)malloc(sizeof(int) * cart_comm_size);
+    for (i = 0; i < cart_comm_size; i++) {
         sndMapAll[i] = rcvMapAll[i] = imap[i] = i;
         icount[i] = 0;
     }
@@ -86,8 +87,10 @@ void tioga::exchangeAMRDonors()
             for (i = 0; i < mb->ntotalPointsCart; i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
-                    assert((cg->proc_id[gid] < nsend && cg->proc_id[gid] >= 0));
-                    obdonors[imap[cg->proc_id[gid]]]++;
+                    assert(
+                        (cg->get_proc_id(gid) < nsend &&
+                         cg->get_proc_id(gid) >= 0));
+                    obdonors[imap[cg->get_proc_id(gid)]]++;
                 }
             }
             for (i = 0; i < mb->nsearch; i++) {
@@ -127,8 +130,8 @@ void tioga::exchangeAMRDonors()
             for (i = 0; i < mb->ntotalPointsCart; i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
-                    procid = imap[cg->proc_id[gid]];
-                    localid = cg->local_id[gid];
+                    procid = imap[cg->get_proc_id(gid)];
+                    localid = cg->get_local_id(gid);
                     sndPack[procid].intData[intcount[procid]++] = localid;
                     sndPack[procid].intData[intcount[procid]++] =
                         mb->receptorIdCart[i];
@@ -319,10 +322,12 @@ void tioga::checkComm()
     int *sndMap, *rcvMap;
     PACKET *sndPack, *rcvPack;
 
-    nsend = nrecv = pc_cart->numprocs;
+    const int cart_comm_size = pc_cart->get_comm_size();
+    nsend = cart_comm_size;
+    nrecv = cart_comm_size;
     sndMap = (int*)malloc(sizeof(int) * nsend);
     rcvMap = (int*)malloc(sizeof(int) * nrecv);
-    for (i = 0; i < pc_cart->numprocs; i++) {
+    for (i = 0; i < cart_comm_size; i++) {
         sndMap[i] = rcvMap[i] = i;
     }
     pc_cart->setMap(nsend, nrecv, sndMap, rcvMap);

@@ -106,11 +106,12 @@ private:
     //! q-variables registered
     double** qblock;
 
-public:
     int ihigh;
     int ihighGlobal;
     int iamrGlobal;
     int mexclude, nfringe;
+
+public:
     /** basic constructor */
     tioga()
     /*
@@ -338,6 +339,8 @@ public:
     void outputStatistics();
     void myTimer(char const* /*unused*/, int /*unused*/);
     void reduce_fringes();
+    int get_ihighGlobal() { return ihighGlobal; }
+    int get_iamrGlobal() { return iamrGlobal; }
 };
 } // namespace TIOGA
 

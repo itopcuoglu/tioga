@@ -38,7 +38,6 @@ private:
     bool own_data_ptrs{true};
     bool own_amr_mesh_info{false};
 
-public:
     TIOGA::AMRMeshInfo* m_info{nullptr};
     TIOGA::AMRMeshInfo* m_info_device{nullptr};
 
@@ -46,16 +45,17 @@ public:
     int* level_num{nullptr};
     int* proc_id{nullptr};
     int* local_id{nullptr};
+    int myid{0};
     int* ilo{nullptr};
     int* ihi{nullptr};
     int* dims{nullptr};
-    int myid{0};
     int nf{0};
     double* xlo{nullptr};
     double* dx{nullptr};
     int ngrids{0};
     void (*donor_frac)(int*, double*, int*, double*) = nullptr;
 
+public:
     CartGrid() = default;
     ~CartGrid();
 
@@ -70,6 +70,23 @@ public:
     }
 
     void create_mesh_info();
+
+    TIOGA::AMRMeshInfo* get_mesh_info() { return m_info; }
+    int get_proc_id(int index) { return proc_id[index]; }
+    int get_local_id(int index) { return local_id[index]; }
+    void set_myid(int rank_id) { myid = rank_id; }
+    int get_myid() { return myid; }
+    int get_ilo(int index) { return ilo[index]; }
+    int get_ihi(int index) { return ihi[index]; }
+    int get_dims(int index) { return dims[index]; }
+    int get_nf() { return nf; }
+    double get_xlo(int index) { return xlo[index]; }
+    double get_dx(int index) { return dx[index]; }
+    int get_ngrids() { return ngrids; }
+    void (*get_donor_frac())(int*, double*, int*, double*)
+    {
+        return donor_frac;
+    }
 };
 
 #endif /* CARTGRID_H */

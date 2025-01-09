@@ -39,12 +39,11 @@ private:
     int nrecv;
     int* sndMap;
     int* rcvMap;
-
-public:
     int myid;
     int numprocs;
     MPI_Comm scomm;
 
+public:
     parallelComm()
     {
         sndMap = nullptr;
@@ -74,6 +73,18 @@ public:
     void initPackets(PACKET* sndPack, PACKET* rcvPack) const;
 
     void clearPackets(PACKET* sndPack, PACKET* rcvPack) const;
+
+    void set_comm_size(int nprocs);
+
+    int get_comm_size();
+
+    void set_rank(int procid);
+
+    int get_rank();
+
+    void set_comm(MPI_Comm comm);
+
+    MPI_Comm get_comm();
 };
 
 #endif /* PARALLELCOMM_H */

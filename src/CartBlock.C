@@ -166,18 +166,19 @@ void CartBlock::preprocess(CartGrid* cg)
 {
     int nfrac;
     for (int n = 0; n < 3; n++) {
-        xlo[n] = cg->xlo[(3 * global_id) + n];
+        xlo[n] = cg->get_xlo((3 * global_id) + n);
     }
     for (int n = 0; n < 3; n++) {
-        dx[n] = cg->dx[(3 * global_id) + n];
+        dx[n] = cg->get_dx((3 * global_id) + n);
     }
-    dims[0] = cg->ihi[static_cast<ptrdiff_t>(3 * global_id)] -
-              cg->ilo[static_cast<ptrdiff_t>(3 * global_id)] + 1;
-    dims[1] = cg->ihi[(3 * global_id) + 1] - cg->ilo[(3 * global_id) + 1] + 1;
-    dims[2] = cg->ihi[(3 * global_id) + 2] - cg->ilo[(3 * global_id) + 2] + 1;
-    nf = cg->nf;
-    myid = cg->myid;
-    donor_frac = cg->donor_frac;
+    dims[0] = cg->get_ihi((3 * global_id)) - cg->get_ilo((3 * global_id)) + 1;
+    dims[1] =
+        cg->get_ihi((3 * global_id) + 1) - cg->get_ilo((3 * global_id) + 1) + 1;
+    dims[2] =
+        cg->get_ihi((3 * global_id) + 2) - cg->get_ilo((3 * global_id) + 2) + 1;
+    nf = cg->get_nf();
+    myid = cg->get_myid();
+    donor_frac = cg->get_donor_frac();
     ncell = dims[0] * dims[1] * dims[2];
     ncell_nf = (dims[0] + 2 * nf) * (dims[1] + 2 * nf) * (dims[2] + 2 * nf);
     nnode = (dims[0] + 1) * (dims[1] + 1) * (dims[2] + 1);

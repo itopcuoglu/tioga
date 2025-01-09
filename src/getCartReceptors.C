@@ -39,8 +39,9 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     //
     // limit case we communicate to everybody
     //
-    int* pmap = (int*)malloc(sizeof(int) * pc->numprocs);
-    for (int i = 0; i < pc->numprocs; i++) {
+    const int comm_size = pc->get_comm_size();
+    int* pmap = (int*)malloc(sizeof(int) * comm_size);
+    for (int i = 0; i < comm_size; i++) {
         pmap[i] = 0;
     }
     //
@@ -60,17 +61,18 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     //
     nsearch = 0;
     //
-    for (int c = 0; c < cg->ngrids; c++) {
-        int const cell_count = (cg->dims[3 * c] + 2 * cg->nf) *
-                               (cg->dims[3 * c + 1] + 2 * cg->nf) *
-                               (cg->dims[3 * c + 2] + 2 * cg->nf);
+    for (int c = 0; c < cg->get_ngrids(); c++) {
+        int const cell_count = (cg->get_dims(3 * c) + 2 * cg->get_nf()) *
+                               (cg->get_dims(3 * c + 1) + 2 * cg->get_nf()) *
+                               (cg->get_dims(3 * c + 2) + 2 * cg->get_nf());
 
         int const vol = static_cast<int>(
-            cg->dx[3 * c] * cg->dx[3 * c + 1] * cg->dx[3 * c + 2]);
+            cg->get_dx(3 * c) * cg->get_dx(3 * c + 1) * cg->get_dx(3 * c + 2));
 
         for (int n = 0; n < 3; n++) {
-            obcart->dxc[n] = cg->dx[3 * c + n] * (cg->dims[3 * c + n]) * 0.5;
-            obcart->xc[n] = cg->xlo[3 * c + n] + obcart->dxc[n];
+            obcart->dxc[n] =
+                cg->get_dx(3 * c + n) * (cg->get_dims(3 * c + n)) * 0.5;
+            obcart->xc[n] = cg->get_xlo(3 * c + n) + obcart->dxc[n];
         }
 
         int intersectCount = 0;
@@ -84,9 +86,9 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
 
             auto* xtm = (double*)malloc(sizeof(double) * 3);
 
-            for (int j = 0; j < cg->dims[3 * c]; j++) {
-                for (int k = 0; k < cg->dims[3 * c + 1]; k++) {
-                    for (int l = 0; l < cg->dims[3 * c + 2]; l++) {
+            for (int j = 0; j < cg->get_dims(3 * c); j++) {
+                for (int k = 0; k < cg->get_dims(3 * c + 1); k++) {
+                    for (int l = 0; l < cg->get_dims(3 * c + 2); l++) {
                         fillReceptorDataPtr(
                             cg, cell_count, c, j, k, l, pmap, vol, xtm, false,
                             dataPtr);
@@ -94,9 +96,9 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
                 }
             }
 
-            for (int j = 0; j < cg->dims[3 * c] + 1; j++) {
-                for (int k = 0; k < cg->dims[3 * c + 1] + 1; k++) {
-                    for (int l = 0; l < cg->dims[3 * c + 2] + 1; l++) {
+            for (int j = 0; j < cg->get_dims(3 * c) + 1; j++) {
+                for (int k = 0; k < cg->get_dims(3 * c + 1) + 1; k++) {
+                    for (int l = 0; l < cg->get_dims(3 * c + 2) + 1; l++) {
                         fillReceptorDataPtr(
                             cg, cell_count, c, j, k, l, pmap, vol, xtm, true,
                             dataPtr);
@@ -111,7 +113,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     // create the communication map
     //
     int nsend = 0;
-    for (int i = 0; i < pc->numprocs; i++) {
+    for (int i = 0; i < comm_size; i++) {
         if (pmap[i] == 1) {
             nsend++;
         }
@@ -120,7 +122,7 @@ void MeshBlock::getCartReceptors(CartGrid* cg, parallelComm* pc)
     int* sndMap = (int*)malloc(sizeof(int) * nsend);
     int* rcvMap = (int*)malloc(sizeof(int) * nrecv);
     int m = 0;
-    for (int i = 0; i < pc->numprocs; i++) {
+    for (int i = 0; i < comm_size; i++) {
         if (pmap[i] == 1) {
             sndMap[m] = rcvMap[m] = i;
             m++;
@@ -185,19 +187,20 @@ void MeshBlock::fillReceptorDataPtr(
     int itm = -1;
     if (isNodal) {
         itm = cart_utils::get_concatenated_node_index(
-            cg->dims[3 * c], cg->dims[3 * c + 1], cg->dims[3 * c + 2], cg->nf,
-            j, k, l);
+            cg->get_dims(3 * c), cg->get_dims(3 * c + 1),
+            cg->get_dims(3 * c + 2), cg->get_nf(), j, k, l);
 
-        xtm[0] = cg->xlo[3 * c] + j * cg->dx[3 * c];
-        xtm[1] = cg->xlo[3 * c + 1] + k * cg->dx[3 * c + 1];
-        xtm[2] = cg->xlo[3 * c + 2] + l * cg->dx[3 * c + 2];
+        xtm[0] = cg->get_xlo(3 * c) + j * cg->get_dx(3 * c);
+        xtm[1] = cg->get_xlo(3 * c + 1) + k * cg->get_dx(3 * c + 1);
+        xtm[2] = cg->get_xlo(3 * c + 2) + l * cg->get_dx(3 * c + 2);
     } else {
         itm = cart_utils::get_cell_index(
-            cg->dims[3 * c], cg->dims[3 * c + 1], cg->nf, j, k, l);
+            cg->get_dims(3 * c), cg->get_dims(3 * c + 1), cg->get_nf(), j, k,
+            l);
 
-        xtm[0] = cg->xlo[3 * c] + (j + 0.5) * cg->dx[3 * c];
-        xtm[1] = cg->xlo[3 * c + 1] + (k + 0.5) * cg->dx[3 * c + 1];
-        xtm[2] = cg->xlo[3 * c + 2] + (l + 0.5) * cg->dx[3 * c + 2];
+        xtm[0] = cg->get_xlo(3 * c) + (j + 0.5) * cg->get_dx(3 * c);
+        xtm[1] = cg->get_xlo(3 * c + 1) + (k + 0.5) * cg->get_dx(3 * c + 1);
+        xtm[2] = cg->get_xlo(3 * c + 2) + (l + 0.5) * cg->get_dx(3 * c + 2);
     }
 
     double xd[3];
@@ -217,7 +220,7 @@ void MeshBlock::fillReceptorDataPtr(
     }
 
     if (iflag > 0) {
-        pmap[cg->proc_id[c]] = 1;
+        pmap[cg->get_proc_id(c)] = 1;
         dataPtr->next = (INTEGERLIST2*)malloc(sizeof(INTEGERLIST2));
         dataPtr = dataPtr->next;
         dataPtr->intDataSize = 4;
@@ -225,8 +228,8 @@ void MeshBlock::fillReceptorDataPtr(
         dataPtr->realData =
             (double*)malloc(sizeof(double) * dataPtr->realDataSize);
         dataPtr->intData = (int*)malloc(sizeof(int) * dataPtr->intDataSize);
-        dataPtr->intData[0] = cg->proc_id[c];
-        dataPtr->intData[1] = cg->local_id[c];
+        dataPtr->intData[0] = cg->get_proc_id(c);
+        dataPtr->intData[1] = cg->get_local_id(c);
         dataPtr->intData[2] = itm;
         dataPtr->intData[3] = 0;
         nsearch += 1;
