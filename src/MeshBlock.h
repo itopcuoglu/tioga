@@ -137,16 +137,17 @@ private:
     int* icft;       // frequency table for nodal containment
     int mapdims[3];  // dimensions of the map
     double mapdx[3]; // sides of the map
-public:
-    int* iblank; /** < iblank value for each grid node */
+    int* iblank;     /** < iblank value for each grid node */
     int* iblank_reduced;
     int ntotalPointsCart;
-    double* rxyzCart;
-    int* donorIdCart;
     int donorListLength;
-
     int nfringe;
     int mexclude;
+
+public:
+    double* rxyzCart;
+    int* donorIdCart;
+
     int meshtag; /** < tag of the mesh that this block belongs to */
     int check_uniform_hex_flag;
     double resolutionScale;
@@ -571,6 +572,10 @@ public:
     {
         return static_cast<char>((box1.hi >= box2.lo) && (box2.hi >= box1.lo));
     }
+
+    int get_ntotalPointsCart() { return ntotalPointsCart; }
+    void set_nfringe(int numfringe) { nfringe = numfringe; }
+    void set_mexclude(int num_mexclude) { mexclude = num_mexclude; }
 };
 
 /* Mesh Block Complement Rank Data */

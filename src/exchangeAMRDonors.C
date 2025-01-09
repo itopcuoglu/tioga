@@ -84,7 +84,7 @@ void tioga::exchangeAMRDonors()
         //
         for (int ib = 0; ib < nblocks; ib++) {
             auto& mb = mblocks[ib];
-            for (i = 0; i < mb->ntotalPointsCart; i++) {
+            for (i = 0; i < mb->get_ntotalPointsCart(); i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
                     assert(
@@ -127,7 +127,7 @@ void tioga::exchangeAMRDonors()
     if (nblocks > 0) {
         for (int ib = 0; ib < nblocks; ib++) {
             auto& mb = mblocks[ib];
-            for (i = 0; i < mb->ntotalPointsCart; i++) {
+            for (i = 0; i < mb->get_ntotalPointsCart(); i++) {
                 if (mb->donorIdCart[i] != -1) {
                     gid = mb->donorIdCart[i];
                     procid = imap[cg->get_proc_id(gid)];
