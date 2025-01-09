@@ -52,7 +52,7 @@ void tioga::exchangeAMRDonors()
     //  since the receiver side is unknown
     //
     pc_cart->getMap(&nsend_sav, &nrecv_sav, &sndMap, &rcvMap);
-    int cart_comm_size = pc_cart->get_comm_size();
+    const int cart_comm_size = pc_cart->get_comm_size();
     sndMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
     rcvMapAll = (int*)malloc(sizeof(int) * cart_comm_size);
     nsend = nrecv = cart_comm_size;
@@ -322,7 +322,7 @@ void tioga::checkComm()
     int *sndMap, *rcvMap;
     PACKET *sndPack, *rcvPack;
 
-    int cart_comm_size = pc_cart->get_comm_size();
+    const int cart_comm_size = pc_cart->get_comm_size();
     nsend = cart_comm_size;
     nrecv = cart_comm_size;
     sndMap = (int*)malloc(sizeof(int) * nsend);
