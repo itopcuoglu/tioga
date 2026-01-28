@@ -137,6 +137,8 @@ private:
     int* icft;       // frequency table for nodal containment
     int mapdims[3];  // dimensions of the map
     double mapdx[3]; // sides of the map
+    int* vision_space = nullptr;
+
 public:
     int* iblank; /** < iblank value for each grid node */
     int* iblank_reduced;
@@ -571,6 +573,9 @@ public:
     {
         return static_cast<char>((box1.hi >= box2.lo) && (box2.hi >= box1.lo));
     }
+
+    void create_eim_vision_space_bins();
+    void search_eim();
 };
 
 /* Mesh Block Complement Rank Data */

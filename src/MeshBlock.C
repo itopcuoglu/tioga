@@ -2330,3 +2330,92 @@ void MeshBlock::checkOrphans()
         fclose(fp);
     }
 }
+
+// void MeshBlock::search_eim(){
+
+//	create_eim_vision_space_bins();
+
+//	for (isearch=0;isearch<nsearch;++isearch){
+
+//	}
+
+//}
+
+void MeshBlock::create_eim_vision_space_bins()
+{
+
+    double xmin[3], xmax[3];
+    int vdim[3];
+    double dv[3];
+    int nvert;
+    int inode;
+    int i3;
+    // Minimum and maximum coordinates of bounding box
+    double bbmin[3], bbmax[3];
+    // Minimum and maximum indices of acell
+    // inside the vision space bin
+    int ivismin[3], ivismax[3];
+
+    for (int j = 0; j < 3; ++j) {
+        xmin[j] = std::numeric_limits<double>::max();
+        xmax[j] = std::numeric_limits<double>::min();
+    }
+
+    for (int i = 0; i < nnodes; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            xmin[j] = std::min(xmin[j], x[3 * i + j]);
+            xmax[j] = std::max(xmax[j], x[3 * i + j]);
+        }
+    }
+
+    vdim[0] = std::pow(ncells, 0.333333);
+    vdim[1] = vdim[0];
+    vdim[2] = vdim[0];
+
+    vision_space = (int*)malloc(sizeof(int) * vdim[0] * vdim[1] * vdim[2]);
+
+    for (int j = 0; j < 3; ++j) {
+        dv[j] = (xmax[j] - xmin[j]) / vdim[j];
+    }
+
+    for (int itype = 0; itype < ntypes; ++itype) {
+        nvert = nv[itype];
+        for (int icell = 0; icell < nc[itype]; ++icell) {
+
+            for (intj = 0; j < 3; ++j) {
+                bbmin[j] = std::numeric_limits<double>::max();
+                bbmax[j] = std::numeric_limits<double>::min();
+            }
+
+            for (int ivert = 0; ivert < nvert; ++ivert) {
+                inode = vconn[itype][(nvert * icell) + ivert] - BASE;
+                i3 = 3 * inode;
+                // The bounding box for the cell/element
+                for (int j = 0; j < 3; ++j) {
+                    bbmin[j] = std::min(bbmin[j], x[i3 + j]);
+                    bbmax[j] = std::max(bbax[j], x[i3 + j]);
+                }
+            }
+            for (int j = 0; j < 3; ++j) {
+                ivismin[j] = std::floor((bbmin[j] - xmin[j]) / ds[j]);
+                ivismax[j] = std::floor((bbmax[j] - xmin[j]) / ds[j]);
+            }
+
+            // Placing the maximum and minimum vision space
+            // indices for this cell into vision_space
+
+            for (k = ivismin[2]; k <= ivismax[2]; ++k) {
+                for (j = ivismin[1]; j <= ivismax[1]; ++j) {
+                    for (i = ivismin[0]; i <= ivismax[0]; ++i) {
+                        vision_space[k * vdim[1] * vdim[0] + j * vdim[0] + i] =
+                            icell;
+                    }
+                }
+            }
+        }
+
+        // imin,imax,jmin,jmax,kmin,kmax
+
+        // auxGrid[i,j,k]=icell;
+    }
+}
